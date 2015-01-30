@@ -1,0 +1,22 @@
+{
+    "name": "docplanner/hubspot-bundle",
+    "description": "HubSpot Bundle",
+    "minimum-stability": "dev",
+    "authors": [
+        {
+            "name": "Bartłomiej Kuleszewicz",
+            "email": "bartlomiej.kuleszewicz@gmail.com"
+        }
+    ],
+    "require": {
+        "fungku/hubspot-php": "0.1.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "nediam\\HubSpotBundle\\": ""
+        }
+    },
+    "require-dev": {
+        "matthiasnoback/symfony-config-test": "0.*"
+    }
+}
