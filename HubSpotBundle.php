@@ -1,6 +1,6 @@
 <?php
 
-namespace nediam\HubSpotBundle;
+namespace HubSpotBundle;
 
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
