@@ -9,7 +9,7 @@
     </parameters>
 
     <services>
-        <service id="hubsport" class="%hubspot.client.class%" factory-class="%hubspot.client.class%" factory-method="create">
+        <service id="hubsport" class="%hubspot.client.class%" factory-class="%hubspot.client.class%" factory-method="make">
             <argument>%hubspot.api_key%</argument>
         </service>
     </services>
