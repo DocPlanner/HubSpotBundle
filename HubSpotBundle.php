@@ -1,6 +1,6 @@
 <?php
 
-namespace HubSpotBundle;
+namespace DocPlanner\Bundle\HubSpotBundle;
 
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 

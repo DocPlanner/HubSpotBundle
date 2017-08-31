@@ -1,6 +1,6 @@
 <?php
 
-namespace HubSpotBundle\DependencyInjection;
+namespace DocPlanner\Bundle\HubSpotBundle\DependencyInjection;
 
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Config\FileLocator;
@@ -20,11 +20,11 @@ class HubSpotExtension extends Extension
     public function load(array $configs, ContainerBuilder $container)
     {
         $configuration = new Configuration();
-        $config = $this->processConfiguration($configuration, $configs);
+        $config        = $this->processConfiguration($configuration, $configs);
 
         $container->setParameter('hubspot.api_key', $config['api_key']);
 
-        $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
-        $loader->load('hubspot-services.xml');
+        $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
+        $loader->load('hubspot-services.yml');
     }
 }

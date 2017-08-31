@@ -1,0 +1,10 @@
+parameters:
+    hubspot.client.class: 'SevenShores\Hubspot\Factory'
+    hubspot.factory.class: 'SevenShores\Hubspot\Factory'
+
+services:
+    hubspot:
+        class: "%hubspot.client.class%"
+        factory: ["%hubspot.factory.class%", 'create']
+        arguments:
+            - "%hubspot.api_key%"
