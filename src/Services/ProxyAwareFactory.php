@@ -6,6 +6,7 @@ use SevenShores\Hubspot\Factory as HubspotFactory;
 
 class ProxyAwareFactory extends HubspotFactory
 {
+    /** @inheritDoc */
     public function __construct($config = [], $client = null, $clientOptions = [], $wrapResponse = true)
     {
         if (null !== $client)

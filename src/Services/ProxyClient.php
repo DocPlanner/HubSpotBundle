@@ -2,7 +2,7 @@
 
 namespace DocPlanner\Bundle\HubSpotBundle\Services;
 
-use GuzzleHttp\Client;
+use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Middleware;
 use GuzzleHttp\Psr7\Uri;
@@ -11,9 +11,7 @@ use SevenShores\Hubspot\Http\Client as HubspotClient;
 
 class ProxyClient extends HubspotClient
 {
-	/**
-	 * @inheritDoc.
-	 */
+	/** @inheritDoc */
 	public function __construct($config = [], $client = null, $clientOptions = [], $wrapResponse = true)
 	{
 		if (null !== $this->client)
@@ -42,10 +40,6 @@ class ProxyClient extends HubspotClient
 			return $request;
 		}));
 
-		$newClient = new Client([
-			'handler' => $handlerStack,
-		]);
-
-		$this->client = $newClient;
+        $this->client = new GuzzleClient(['handler' => $handlerStack]);
 	}
 }
