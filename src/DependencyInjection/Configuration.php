@@ -22,9 +22,20 @@ class Configuration implements ConfigurationInterface
 
         $rootNode->children()
             ->scalarNode('api_key')
-                ->isRequired()
             ->end()
-        ->end();
+            ->arrayNode('proxy')
+                ->children()
+                    ->scalarNode('custom_url')
+                    ->end()
+                    ->arrayNode('custom_headers')
+                        ->defaultValue([])
+                        ->useAttributeAsKey('name')
+                        ->prototype('scalar')
+                            ->cannotBeEmpty()
+                        ->end()
+                    ->end()
+                ->end()
+            ->end();
 
         return $treeBuilder;
     }
