@@ -24,6 +24,7 @@ class Configuration implements ConfigurationInterface
             ->scalarNode('api_key')
             ->end()
             ->arrayNode('proxy')
+                ->defaultValue([])
                 ->children()
                     ->scalarNode('custom_url')
                     ->end()
