@@ -1,12 +1,10 @@
 <?php
 
-declare(strict_types=1);
-
-namespace DocPlanner\Bundle\HubSpotBundle\Factory;
+namespace DocPlanner\Bundle\HubSpotBundle\Services;
 
 use SevenShores\Hubspot\Factory as HubspotFactory;
 
-class Factory extends HubspotFactory
+class ProxyAwareFactory extends HubspotFactory
 {
     public function __construct($config = [], $client = null, $clientOptions = [], $wrapResponse = true)
     {
@@ -21,8 +19,7 @@ class Factory extends HubspotFactory
             return;
         }
 
-
-
+		$this->client = new ProxyClient($config, null, $clientOptions, $wrapResponse);
     }
 
     public static function createClient(array $config = [], $client = null, $clientOptions = [], $wrapResponse = true)

@@ -1,10 +1,10 @@
 parameters:
-    hubspot.client.class: 'SevenShores\Hubspot\Factory'
-    hubspot.factory.class: 'SevenShores\Hubspot\Factory'
+    hubspot.client.class: 'DocPlanner\Bundle\HubSpotBundle\Services\ProxyAwareFactory'
+    hubspot.factory.class: 'DocPlanner\Bundle\HubSpotBundle\Services\ProxyAwareFactory'
 
 services:
     hubspot:
         class: "%hubspot.client.class%"
-        factory: ["%hubspot.factory.class%", 'create']
+        factory: ["%hubspot.factory.class%", 'createClient']
         arguments:
-            - "@=parameter('hubspot')['api_key']"
+            - "@=parameter('hubspot')"
