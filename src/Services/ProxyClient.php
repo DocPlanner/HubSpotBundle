@@ -21,8 +21,10 @@ class ProxyClient extends HubspotClient
 
 		parent::__construct($config, $client, $clientOptions, $wrapResponse);
 
-		$customUrl     = $config['custom_url'];
-		$customHeaders = $config['custom_headers'];
+        $proxyConfig = $config['proxy'];
+
+        $customUrl     = $proxyConfig['custom_url'];
+		$customHeaders = $proxyConfig['custom_headers'];
 
 		$handlerStack = HandlerStack::create();
 		$handlerStack->push(Middleware::mapRequest(function (RequestInterface $request) use (
