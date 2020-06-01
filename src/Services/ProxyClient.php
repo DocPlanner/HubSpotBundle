@@ -44,4 +44,9 @@ class ProxyClient extends HubspotClient
 
         $this->client = new GuzzleClient(['handler' => $handlerStack]);
 	}
+
+    protected function generateUrl($endpoint, $query_string = null, $requires_auth = true)
+    {
+        return parent::generateUrl($endpoint, $query_string, false);
+    }
 }
