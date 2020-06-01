@@ -9,18 +9,16 @@ class ProxyAwareFactory extends HubspotFactory
     /** @inheritDoc */
     public function __construct($config = [], $client = null, $clientOptions = [], $wrapResponse = true)
     {
-        if (null !== $client)
-        {
+        if (null !== $client) {
             $this->client = $client;
         }
 
-        if ([] === $config['proxy'])
-        {
+        if ([] === $config['proxy']) {
             parent::__construct($config, $client, $clientOptions, $wrapResponse);
             return;
         }
 
-		$this->client = new ProxyClient($config, null, $clientOptions, $wrapResponse);
+        $this->client = new ProxyClient($config, null, $clientOptions, $wrapResponse);
     }
 
     public static function createClient(array $config = [], $client = null, $clientOptions = [], $wrapResponse = true)

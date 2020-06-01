@@ -11,40 +11,38 @@ use SevenShores\Hubspot\Http\Client as HubspotClient;
 
 class ProxyClient extends HubspotClient
 {
-	/** @inheritDoc */
-	public function __construct($config = [], $client = null, $clientOptions = [], $wrapResponse = true)
-	{
-		if (null !== $this->client)
-		{
-			return;
-		}
+    /** @inheritDoc */
+    public function __construct($config = [], $client = null, $clientOptions = [], $wrapResponse = true)
+    {
+        if (null !== $this->client) {
+            return;
+        }
 
-		parent::__construct($config, $client, $clientOptions, $wrapResponse);
+        parent::__construct($config, $client, $clientOptions, $wrapResponse);
 
         $proxyConfig = $config['proxy'];
 
-        $customUrl     = $proxyConfig['custom_url'];
-		$customHeaders = $proxyConfig['custom_headers'];
+        $customUrl = $proxyConfig['custom_url'];
+        $customHeaders = $proxyConfig['custom_headers'];
 
-		$handlerStack = HandlerStack::create();
-		$handlerStack->push(Middleware::mapRequest(function (RequestInterface $request) use (
-			$customUrl,
-			$customHeaders
-		) {
-			$uri     = str_replace('https://api.hubapi.com', $customUrl, $request->getUri());
-			$request = $request->withUri(new Uri($uri));
+        $handlerStack = HandlerStack::create();
+        $handlerStack->push(Middleware::mapRequest(function (RequestInterface $request) use (
+            $customUrl,
+            $customHeaders
+        ) {
+            $uri = str_replace('https://api.hubapi.com', $customUrl, $request->getUri());
+            $request = $request->withUri(new Uri($uri));
 
-			foreach ($customHeaders as $customHeaderName => $customHeaderValue)
-			{
+            foreach ($customHeaders as $customHeaderName => $customHeaderValue) {
                 $customHeaderName = str_replace('_', '-', $customHeaderName);
                 $request = $request->withHeader($customHeaderName, $customHeaderValue);
-			}
+            }
 
-			return $request;
-		}));
+            return $request;
+        }));
 
         $this->client = new GuzzleClient(['handler' => $handlerStack]);
-	}
+    }
 
     protected function generateUrl($endpoint, $query_string = null, $requires_auth = true)
     {

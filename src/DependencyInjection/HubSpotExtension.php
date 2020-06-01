@@ -20,7 +20,7 @@ class HubSpotExtension extends Extension
     public function load(array $configs, ContainerBuilder $container)
     {
         $configuration = new Configuration;
-        $config        = $this->processConfiguration($configuration, $configs);
+        $config = $this->processConfiguration($configuration, $configs);
 
         $container->setParameter('hubspot', $config);
 
@@ -32,10 +32,9 @@ class HubSpotExtension extends Extension
     private function validateParameters($config): void
     {
         $apiKey = $config['key'];
-        $proxy  = $config['proxy'];
+        $proxy = $config['proxy'];
 
-        if (false === isset($proxy['custom_url']) && ('' === $apiKey || null === $apiKey))
-        {
+        if (false === isset($proxy['custom_url']) && ('' === $apiKey || null === $apiKey)) {
             throw new \RuntimeException('You must provide api_key when not using proxy');
         }
     }
