@@ -36,7 +36,8 @@ class ProxyClient extends HubspotClient
 
 			foreach ($customHeaders as $customHeaderName => $customHeaderValue)
 			{
-				$request = $request->withHeader($customHeaderName, $customHeaderValue);
+                $customHeaderName = str_replace('_', '-', $customHeaderName);
+                $request = $request->withHeader($customHeaderName, $customHeaderValue);
 			}
 
 			return $request;

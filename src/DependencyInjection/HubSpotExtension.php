@@ -31,7 +31,7 @@ class HubSpotExtension extends Extension
 
     private function validateParameters($config): void
     {
-        $apiKey = $config['api_key'];
+        $apiKey = $config['key'];
         $proxy  = $config['proxy'];
 
         if (false === isset($proxy['custom_url']) && ('' === $apiKey || null === $apiKey))
