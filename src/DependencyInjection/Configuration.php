@@ -21,10 +21,20 @@ class Configuration implements ConfigurationInterface
         $rootNode = $treeBuilder->root('hub_spot');
 
         $rootNode->children()
-            ->scalarNode('api_key')
-                ->isRequired()
+            ->scalarNode('key')
             ->end()
-        ->end();
+            ->arrayNode('proxy')
+                ->children()
+                    ->scalarNode('custom_url')
+                    ->end()
+                    ->arrayNode('custom_headers')
+                        ->normalizeKeys(false)
+                        ->prototype('scalar')
+                            ->cannotBeEmpty()
+                        ->end()
+                    ->end()
+                ->end()
+            ->end();
 
         return $treeBuilder;
     }
