@@ -30,11 +30,17 @@ class ProxyClient extends HubspotClient
             $customUrl,
             $customHeaders
         ) {
-            $uri = str_replace('https://api.hubapi.com', $customUrl, $request->getUri());
+
+            $parsedUrl = parse_url($request->getUri());
+            $uri = vsprintf('%s%s?%s', [
+                $customUrl,
+                $parsedUrl['path'],
+                $parsedUrl['query'] ?? '',
+            ]);
+
             $request = $request->withUri(new Uri($uri));
 
             foreach ($customHeaders as $customHeaderName => $customHeaderValue) {
-                $customHeaderName = str_replace('_', '-', $customHeaderName);
                 $request = $request->withHeader($customHeaderName, $customHeaderValue);
             }
 

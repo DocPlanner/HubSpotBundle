@@ -28,7 +28,7 @@ class Configuration implements ConfigurationInterface
                     ->scalarNode('custom_url')
                     ->end()
                     ->arrayNode('custom_headers')
-                        ->useAttributeAsKey('name')
+                        ->normalizeKeys(false)
                         ->prototype('scalar')
                             ->cannotBeEmpty()
                         ->end()
