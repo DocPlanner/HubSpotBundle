@@ -6,5 +6,6 @@ services:
     hubspot:
         class: "%hubspot.client.class%"
         factory: ["%hubspot.factory.class%", 'createClient']
+        lazy: true
         arguments:
             - "%hubspot%"
