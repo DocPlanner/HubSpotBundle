@@ -11,47 +11,54 @@ use SevenShores\Hubspot\Http\Client as HubspotClient;
 
 class ProxyClient extends HubspotClient
 {
-    /** @inheritDoc */
-    public function __construct($config = [], $client = null, $clientOptions = [], $wrapResponse = true)
-    {
-        if (null !== $this->client) {
-            return;
-        }
+	/** @inheritDoc */
+	public function __construct($config = [], $client = null, $clientOptions = [], $wrapResponse = true)
+	{
+		if (null !== $this->client)
+		{
+			return;
+		}
 
-        parent::__construct($config, $client, $clientOptions, $wrapResponse);
+		if (!array_key_exists('key', $config) || empty($config['key']))
+		{
+			$config['key'] = 'thisKeyIsRequiredByExternalLibrary';
+		}
 
-        $proxyConfig = $config['proxy'];
+		parent::__construct($config, $client, $clientOptions, $wrapResponse);
 
-        $customUrl = $proxyConfig['custom_url'];
-        $customHeaders = $proxyConfig['custom_headers'];
+		$proxyConfig = $config['proxy'];
 
-        $handlerStack = HandlerStack::create();
-        $handlerStack->push(Middleware::mapRequest(function (RequestInterface $request) use (
-            $customUrl,
-            $customHeaders
-        ) {
+		$customUrl     = $proxyConfig['custom_url'];
+		$customHeaders = $proxyConfig['custom_headers'];
 
-            $parsedUrl = parse_url($request->getUri());
-            $uri = vsprintf('%s%s?%s', [
-                $customUrl,
-                $parsedUrl['path'],
-                $parsedUrl['query'] ?? '',
-            ]);
+		$handlerStack = HandlerStack::create();
+		$handlerStack->push(Middleware::mapRequest(function (RequestInterface $request) use (
+			$customUrl,
+			$customHeaders
+		) {
 
-            $request = $request->withUri(new Uri($uri));
+			$parsedUrl = parse_url($request->getUri());
+			$uri       = vsprintf('%s%s?%s', [
+				$customUrl,
+				$parsedUrl['path'],
+				$parsedUrl['query'] ?? '',
+			]);
 
-            foreach ($customHeaders as $customHeaderName => $customHeaderValue) {
-                $request = $request->withHeader($customHeaderName, $customHeaderValue);
-            }
+			$request = $request->withUri(new Uri($uri));
 
-            return $request;
-        }));
+			foreach ($customHeaders as $customHeaderName => $customHeaderValue)
+			{
+				$request = $request->withHeader($customHeaderName, $customHeaderValue);
+			}
 
-        $this->client = new GuzzleClient(['handler' => $handlerStack]);
-    }
+			return $request;
+		}));
 
-    protected function generateUrl($endpoint, $query_string = null, $requires_auth = true)
-    {
-        return parent::generateUrl($endpoint, $query_string, false);
-    }
+		$this->client = new GuzzleClient(['handler' => $handlerStack]);
+	}
+
+	protected function generateUrl($endpoint, $query_string = null, $requires_auth = true)
+	{
+		return parent::generateUrl($endpoint, $query_string, false);
+	}
 }
