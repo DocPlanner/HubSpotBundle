@@ -17,8 +17,8 @@ class Configuration implements ConfigurationInterface
      */
     public function getConfigTreeBuilder()
     {
-        $treeBuilder = new TreeBuilder();
-        $rootNode = $treeBuilder->root('hub_spot');
+        $treeBuilder = new TreeBuilder('hub_spot');
+        $rootNode = !method_exists($treeBuilder, 'getRootNode') ? $treeBuilder->root('hub_spot') : $treeBuilder->getRootNode();
 
         $rootNode->children()
             ->scalarNode('key')

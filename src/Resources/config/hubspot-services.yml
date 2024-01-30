@@ -4,7 +4,7 @@ parameters:
 
 services:
     hubspot:
-        class: "%hubspot.client.class%"
-        factory: ["%hubspot.factory.class%", 'createClient']
+        class: '%hubspot.client.class%'
+        factory: ['%hubspot.factory.class%', 'createClient']
         arguments:
-            - "%hubspot%"
+            - '%hubspot%'
