@@ -4,9 +4,6 @@ namespace DocPlanner\Bundle\HubSpotBundle\Services;
 
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\HandlerStack;
-use GuzzleHttp\Middleware;
-use GuzzleHttp\Psr7\Uri;
-use Psr\Http\Message\RequestInterface;
 use RuntimeException;
 use SevenShores\Hubspot\Http\Client as HubspotClient;
 
@@ -45,35 +42,8 @@ class ProxyClient extends HubspotClient
 			throw new RuntimeException('Invalid HubSpot proxy headers configuration');
 		}
 
-		$customHeaders = $this->normalizeCustomHeaders($customHeaders);
-
 		$handlerStack = HandlerStack::create();
-		$handlerStack->push(Middleware::mapRequest(function (RequestInterface $request) use (
-			$customUrl,
-			$customHeaders
-		) {
-
-			$parsedUrl = parse_url((string)$request->getUri());
-			if (false === $parsedUrl)
-			{
-				throw new RuntimeException('Invalid HubSpot request URL');
-			}
-
-			$uri       = vsprintf('%s%s?%s', [
-				$customUrl,
-				$parsedUrl['path'] ?? '',
-				$parsedUrl['query'] ?? '',
-			]);
-
-			$request = $request->withUri(new Uri($uri));
-
-			foreach ($customHeaders as $customHeaderName => $customHeaderValue)
-			{
-				$request = $request->withHeader($customHeaderName, $customHeaderValue);
-			}
-
-			return $request;
-		}));
+		$handlerStack->push(ProxyRequestMiddleware::create($customUrl, $customHeaders));
 
 		$this->client = new GuzzleClient(['handler' => $handlerStack]);
 	}
@@ -81,33 +51,5 @@ class ProxyClient extends HubspotClient
 	protected function generateUrl($endpoint, $query_string = null, $requires_auth = true)
 	{
 		return parent::generateUrl($endpoint, $query_string, false);
-	}
-
-	/**
-	 * @param array<string, mixed> $customHeaders
-	 *
-	 * @return array<string, string>
-	 */
-	private function normalizeCustomHeaders(array $customHeaders): array
-	{
-		$normalizedHeaders = [];
-
-		foreach ($customHeaders as $name => $value)
-		{
-			if (null === $value || !is_scalar($value))
-			{
-				continue;
-			}
-
-			$value = trim((string)$value);
-			if ('' === $value || 'Bearer' === $value)
-			{
-				continue;
-			}
-
-			$normalizedHeaders[$name] = $value;
-		}
-
-		return $normalizedHeaders;
 	}
 }
