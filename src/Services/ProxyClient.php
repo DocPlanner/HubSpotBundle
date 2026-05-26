@@ -4,9 +4,7 @@ namespace DocPlanner\Bundle\HubSpotBundle\Services;
 
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\HandlerStack;
-use GuzzleHttp\Middleware;
-use GuzzleHttp\Psr7\Uri;
-use Psr\Http\Message\RequestInterface;
+use RuntimeException;
 use SevenShores\Hubspot\Http\Client as HubspotClient;
 
 class ProxyClient extends HubspotClient
@@ -27,32 +25,25 @@ class ProxyClient extends HubspotClient
 		parent::__construct($config, $client, $clientOptions, $wrapResponse);
 
 		$proxyConfig = $config['proxy'];
+		if (!is_array($proxyConfig))
+		{
+			throw new RuntimeException('Invalid HubSpot proxy configuration');
+		}
 
-		$customUrl     = $proxyConfig['custom_url'];
-		$customHeaders = $proxyConfig['custom_headers'];
+		$customUrl = $proxyConfig['custom_url'] ?? null;
+		if (!is_string($customUrl))
+		{
+			throw new RuntimeException('Invalid HubSpot proxy URL configuration');
+		}
+
+		$customHeaders = $proxyConfig['custom_headers'] ?? [];
+		if (!is_array($customHeaders))
+		{
+			throw new RuntimeException('Invalid HubSpot proxy headers configuration');
+		}
 
 		$handlerStack = HandlerStack::create();
-		$handlerStack->push(Middleware::mapRequest(function (RequestInterface $request) use (
-			$customUrl,
-			$customHeaders
-		) {
-
-			$parsedUrl = parse_url($request->getUri());
-			$uri       = vsprintf('%s%s?%s', [
-				$customUrl,
-				$parsedUrl['path'],
-				$parsedUrl['query'] ?? '',
-			]);
-
-			$request = $request->withUri(new Uri($uri));
-
-			foreach ($customHeaders as $customHeaderName => $customHeaderValue)
-			{
-				$request = $request->withHeader($customHeaderName, $customHeaderValue);
-			}
-
-			return $request;
-		}));
+		$handlerStack->push(ProxyRequestMiddleware::create($customUrl, $customHeaders));
 
 		$this->client = new GuzzleClient(['handler' => $handlerStack]);
 	}
