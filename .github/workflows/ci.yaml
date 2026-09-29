@@ -1,0 +1,63 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    name: PHP ${{ matrix.php }}, ${{ matrix.name }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # monolith-app composer.lock
+          - name: monolith-app lock
+            php: '7.4'
+            pins: symfony/config:4.4.44 symfony/dependency-injection:3.4.47 symfony/http-kernel:3.4.49 symfony/yaml:4.4.45 hubspot/hubspot-php:3.2.1 guzzlehttp/guzzle:6.5.8 guzzlehttp/psr7:1.9.1
+          - name: lowest deps
+            php: '7.4'
+            flags: --prefer-lowest --prefer-stable
+          - name: Symfony 3.4
+            php: '7.4'
+            pins: symfony/config:3.4.* symfony/dependency-injection:3.4.* symfony/http-kernel:3.4.* symfony/yaml:3.4.*
+          - name: Symfony 4.4
+            php: '7.4'
+            pins: symfony/config:4.4.* symfony/dependency-injection:4.4.* symfony/http-kernel:4.4.* symfony/yaml:4.4.*
+          - name: Symfony 4.4
+            php: '8.1'
+            pins: symfony/config:4.4.* symfony/dependency-injection:4.4.* symfony/http-kernel:4.4.* symfony/yaml:4.4.*
+          - name: Symfony 5.4
+            php: '8.1'
+            pins: symfony/config:5.4.* symfony/dependency-injection:5.4.* symfony/http-kernel:5.4.* symfony/yaml:5.4.*
+          - name: Symfony 6.4
+            php: '8.2'
+            pins: symfony/config:6.4.* symfony/dependency-injection:6.4.* symfony/http-kernel:6.4.* symfony/yaml:6.4.*
+          - name: latest deps
+            php: '8.3'
+    env:
+      PINS: ${{ matrix.pins }}
+      COMPOSER_NO_SECURITY_BLOCKING: 1
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          tools: composer:v2
+          coverage: none
+
+      - name: Install dependencies
+        run: |
+          if [ -n "$PINS" ]; then composer require --no-update --no-interaction $PINS; fi
+          composer update --no-interaction --no-progress ${{ matrix.flags }}
+          composer show | grep -E '^(hubspot/hubspot-php|symfony/(config|dependency-injection|http-kernel|yaml)) '
+
+      - name: PHPUnit
+        run: vendor/bin/phpunit
