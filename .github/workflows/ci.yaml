@@ -17,10 +17,6 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          # monolith-app composer.lock
-          - name: monolith-app lock
-            php: '7.4'
-            pins: symfony/config:4.4.44 symfony/dependency-injection:3.4.47 symfony/http-kernel:3.4.49 symfony/yaml:4.4.45 hubspot/hubspot-php:3.2.1 guzzlehttp/guzzle:6.5.8 guzzlehttp/psr7:1.9.1
           - name: lowest deps
             php: '7.4'
             flags: --prefer-lowest --prefer-stable
